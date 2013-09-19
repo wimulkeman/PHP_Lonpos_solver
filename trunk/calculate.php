@@ -1,13 +1,13 @@
 <?php
-// Laad de bestanden in
+// Include the required files
 include_once('./functions.php');
 include_once('./9x9_board.php');
 include_once('./pieces.php');
 
 $startTime = (float) (time() + microtime());
-echo monitor('Bestanden ingeladen');
+echo monitor('Files included');
 
-// De uitzonderingen voor geisolleerde vakken
+// The exceptions to detect invalid situations
 // . . . . .
 // . . 1 . .
 // . 1 0 1 .
@@ -50,10 +50,10 @@ $regex4 = '/1[01]{' . ($lineLength - 2) . '}101'
 $regex5 = '/111[01]{' . ($lineLength - 4) . '}1001[01]{'
     . ($lineLength - 4) . '}111/';
 
-// Geef het script weer wat meer tijd
+// Enable the script to run as long as needed
 set_time_limit(0);
 
-// Houd een log bij
+// Keep track of the progress made by the script
 $log = array(
     'solutions' => 0,
     'solutionsDrawn' => array(),
@@ -64,11 +64,11 @@ $log = array(
 );
 
 /**
- * Zoek naar de mogelijke oplossingen
+ * Calculate all possible solutions
  *
- * @param array  &$pieces  De te bekijken stukken
- * @param string $solution De tot dan toe gevonden oplossing
- * @param string $bitboard De bitboard in zijn staat van dat moment
+ * @param array  &$pieces  The available pieces
+ * @param string $solution The solution calculation upto this point
+ * @param string $bitboard The status of the bitboard upto this point
  *
  * @return void
  * @author WIM
@@ -83,7 +83,7 @@ function calculateSolution(&$pieces, $solution, $bitboard, $step = 0)
     global $regex2;
     global $regex3;
 
-    // Als de stap op het juiste niveau is, teken dan de oplossing
+    // If the calculation has reached its last step, draw the solution
     if ($step >= sizeof($pieces)) {
     //if ($step >= 1) {
         $parts = str_split($solution, $lineLength);
@@ -131,13 +131,13 @@ function calculateSolution(&$pieces, $solution, $bitboard, $step = 0)
         //$log['solutionsDrawn'][] = $solution;
         ++ $log['solutions'];
 
-        // Geen verdere actie nodig
+        // No further actions needed, quit this calculation
         return;
     }
 
-    // Loop door alle stukken en kijk welke zouden passen
+    // Check if any of the pieces could provide a possible match
     foreach ($pieces as $pieceValue => $piece) {
-        // Controleer of het soort stuk niet al op het bord ligt
+        // Check if the piece isn't allready on the board
         if (strpos($solution, $pieceValue) !== false) {
             ++ $log['mis_piecevalue'];
             continue;
@@ -146,30 +146,27 @@ function calculateSolution(&$pieces, $solution, $bitboard, $step = 0)
         foreach ($piece['coords'] as $position) {
             //echo $step . ' | ';
 
-            // Bepaal waar het stuk geplaatst moet worden en plaats 0 karakters voor
-            // die lengte
+            // Determine the postion where the piece will be placed, en prefix it with 0
+            // upto that point
             $curPosition = str_repeat('0', strpos($bitboard, '0')) . $position;
-            // Controleer of het stuk niet te lang word.
+            // Check if the piece won't run off the board
             if (strlen($curPosition) >= strlen($bitboard)) {
                 ++ $log['mis_piece_to_long'];
                 continue;
             }
-            // Controleer of het stukje niet langer word dan het bord
-            // Vul de string aan met 0 karakters totdat het even lang is als het bord
-            // zelf. tel een 1 erbij voor het vakje uitzondering systeem in de drawZero
-            // functie
+            // Fill the string for the piece to match the board length. Account 1 extra
             $curPosition .= str_repeat('0', (strlen($bitboard) - strlen($curPosition)));
 
-            // Kijk of er ruimte vrij is
+            // Check if the calculated position is available
             if (($curPosition & $bitboard) != 0) {
                 ++ $log['mis_pieceposition'];
                 continue;
             }
 
-            // Werk het bord bji
+            // Recalculate the board with the new piece inlcuded
             $newBitboard = ($bitboard | $curPosition);
 
-            // Controleer op geisolleerde cellen
+            // Check for invalid isolated cels
             if (preg_match($regex, $newBitboard)
                 || preg_match($regex2, $newBitboard)
                 || preg_match($regex3, $newBitboard)
@@ -178,10 +175,9 @@ function calculateSolution(&$pieces, $solution, $bitboard, $step = 0)
                 continue;
             }
 
-            // Werk de oplossing bij
+            // Generate the new solution
             $newSolution = $solution;
-            // Zoek naar de positie van de 1 in de string en werk deze posite in de
-            // oplossing bij met de waarde van het stuk
+            // Check the position of the new piece and use it to rewrite the solution string
             while (strpos($curPosition, '1') !== false) {
                 $bitPosition = strpos($curPosition, '1');
 
@@ -189,18 +185,18 @@ function calculateSolution(&$pieces, $solution, $bitboard, $step = 0)
                 $curPosition[$bitPosition] = '0';
             }
 
-            // Bereken voor dit stuk de mogelijke oplossingen
+            // Calculate the possible solutions for the generated temporary solution
             calculateSolution($pieces, $newSolution, $newBitboard, $step + 1);
         }
     }
 }
 
-// Er word begonnen met een lege oplossing
+// Start with an empty solution
 $solution = str_repeat('0', strlen($cleanBoardBit));
 
-// Begin met het berekenen
+// Start calculating solutions
 calculateSolution($pieces, $solution, $cleanBoardBit);
 
 debug($log);
 
-echo monitor('Einde berekenen oplossingen');
+echo monitor('Calculating solutions finished');

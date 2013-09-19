@@ -1,15 +1,15 @@
 <?php
 /**
- * Laat debug informatie zien
+ * Display debug information
  *
- * @param mixed $input De informatie die getoond moet worden
+ * @param mixed $input The information that needs to be displayed
  *
  * @return void
  * @author WIM
  */
 function debug($input, $exit = false)
 {
-    // Kijk waar de debug functie word aangeroepen
+    // Backtrace the place where this function whas requested
     $requestPosition = debug_backtrace();
     $line = $requestPosition[0]['line'];
     $file = $requestPosition[0]['file'];
@@ -22,9 +22,9 @@ function debug($input, $exit = false)
 }
 
 /**
- * Geeft een tijdstamp voor een indicatie hoelang iets al duurt
+ * Create a timestamp to indicate the running time of a process
  *
- * @param string  $event De omschrijving van de gebeurtenis
+ * @param string $event The description of the process
  *
  * @return integer
  * @author WIM

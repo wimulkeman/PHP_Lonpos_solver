@@ -1,7 +1,7 @@
 <?php
-// Defineer de mogelijke stukken. De locatie van de stukken word als een
-// gedeeltelijke bitstring aangeduid waarvan word geteld vanaf het eerste vakje
-// die in het figuur in de linker bovenhoek voorkomt
+// Define the possible pieces. De location of a piece is defined by a bitstring
+// where the first part of the piece in the upper left corner is defined by the
+// first character of the string
 $pieces = array(
     'A' => array(
         'color' => 'purple',
@@ -465,7 +465,7 @@ $pieces = array(
         )
     )
 );
-// Onderstaande kan gebruikt wordne om te kijken of de figuren goed worden ingevuld
+// Use the lines below to visualize the possible positions of the defined pieces
 //foreach ($pieces as $pieceValue => $piece) {
     //foreach ($piece['coords'] as $key => $position) {
         //$pieceBitstring = preparePieceBitstring($cleanBoardBit, $position);
