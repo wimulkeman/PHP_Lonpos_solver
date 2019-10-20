@@ -1,5 +1,5 @@
 <?php
-// Define the possible pieces. De location of a piece is defined by a bitstring
+// Define the possible pieces. The location of a piece is defined by a bitstring
 // where the first part of the piece in the upper left corner is defined by the
 // first character of the string
 $pieces = array(
